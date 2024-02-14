@@ -1,5 +1,5 @@
 import os,requests, json, sys
-pteroUrl = ""
+pteroUrl = ''
 headers = json.load(open('headers.json'))
 cookies = json.load(open('cookies.json'))
 
@@ -35,9 +35,17 @@ def rename(before,after,dir):
     data= {'root': dir,'files':[{'from':before,'to':after}]}
     r = requests.put(url,cookies=cookies, json=data,headers = headers)
     print(r)
+    
+def check(name,dir):
+    url = pteroUrl+'/files/list?directory='+dir
+    r = requests.get(url,cookies=cookies)
+    j = json.loads(r.text)
+    for x in j['data']:
+        if name == x['attributes']['name']:
+            return True
+    return False
 
 directory=''  
-printfile(directory)
 while True:
     sys.stdout.write(directory+'> ')
     command = input()
@@ -46,18 +54,30 @@ while True:
         if split[1] == '..':
             directory=directory[:-len(directory.split('/')[-1])-1]
         else:
-            directory=directory+'/'+split[1]
+            if check(split[1],directory):
+                directory=directory+'/'+split[1]
+            else:
+                print('Unkown directory')
     
     elif split[0] == 'ls':
         printfile(directory)
     elif split[0] == 'download':
-        download(directory+'/'+split[1])
+        if check(split[1],directory):
+            download(directory+'/'+split[1])
+        else:
+            print('Unkown file')
     elif split[0] == 'exit':
         exit()
     elif split[0] == 'clear':
         os.system('cls')
     elif split[0] == 'rename':
-        rename(split[1],split[2],directory)
+        if check(split[1],directory):
+            if len(split) == 2:
+                rename(split[1],split[2],directory)
+            else:
+                print('Must be two arguments')
+        else:
+            print('Unkown file')
     elif split[0] == 'help':
         print(help)
     else:
