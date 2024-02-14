@@ -1,3 +1,6 @@
 # client-Pterodactyl-commandline-interface
-Allows you to control the files in your Pterodactyl
-Get cookie and headers from your browser devtool and goto n
+Allows you to control the files in your Pterodactyl <br>
+
+# Setup
+Get headers and url from your browser DevTools under networking
+Get cookies from DevTools under applications
