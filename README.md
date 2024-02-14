@@ -8,7 +8,7 @@ Get cookies from DevTools under applications
 # Commands
 help: Shows this <br>
 ls: Show everything in the folder <br>
-cd: Moves folder takes on argument(mods or ..) <br>
+cd: Moves folder takes one argument(mods or ..) <br>
 download: Takes one argument(elua.txt) <br>
 rename: Takes two arguments(badmod.jar badmod.disabledjar) <br>
 exit: Closes the program <br>
