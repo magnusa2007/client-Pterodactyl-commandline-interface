@@ -1,4 +1,5 @@
 import os,requests, json, sys
+pteroUrl = ""
 headers = json.load(open('headers.json'))
 cookies = json.load(open('cookies.json'))
 
@@ -13,7 +14,7 @@ clear: Clears the console"""
 
 
 def printfile(dir):
-    url = 'https://console.moeat.net/api/client/servers/821ae3ad-4355-4e79-b31f-9ff1ccd23d77/files/list?directory='+dir
+    url = pteroUrl+'/files/list?directory='+dir
     r = requests.get(url,cookies=cookies)
     j = json.loads(r.text)
     for x in j['data']:
@@ -21,7 +22,7 @@ def printfile(dir):
     print(r)
 
 def download(file):
-    url = 'https://console.moeat.net/api/client/servers/821ae3ad-4355-4e79-b31f-9ff1ccd23d77/files/contents?file='+file
+    url = pteroUrl+'/files/contents?file='+file
     r = requests.get(url,cookies=cookies)
     print(r)
     fs = open(file.split('/')[-1],'w')
@@ -30,7 +31,7 @@ def download(file):
     print('Saved to '+file.split('/')[-1])
 
 def rename(before,after,dir):
-    url = 'https://console.moeat.net/api/client/servers/821ae3ad-4355-4e79-b31f-9ff1ccd23d77/files/rename'
+    url = pteroUrl+'/files/rename'
     data= {'root': dir,'files':[{'from':before,'to':after}]}
     r = requests.put(url,cookies=cookies, json=data,headers = headers)
     print(r)
