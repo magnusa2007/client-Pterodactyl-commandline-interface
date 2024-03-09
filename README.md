@@ -28,10 +28,11 @@ rename
 [More command info](https://github.com/magnusa2007/client-Pterodactyl-commandline-interface/blob/main/help.txt)
 
 # Tasks
-- [x] Ls prints uuid
-- [x] Tab complete
-- [x] NBTExplorer and notpad++ support
-- [ ] Find out how to forking upload 
-- [ ] Move
-- [ ] Basic UUID command
-- [ ] Edit url
+- [x] Ls prints uuid.
+- [x] Tab complete.
+- [x] NBTExplorer and notpad++ support.
+- [ ] Find out how to forking upload.
+- [ ] Move.
+- [ ] Basic UUID command.
+- [ ] Open Edit url.
+- [ ] Compress command handling.
