@@ -278,7 +278,7 @@ while True:
     cs = input.split()
     if cs[0] == 'cd':
         if cs[1] == '..':
-            directory=directory[:-len(directory.cs('/')[-1])-1]
+            directory=directory[:-len(directory.split('/')[-1])-1]
         else:
             if cs[1] in tab['dir']:
                 if cs[1].count('.') == 0:
