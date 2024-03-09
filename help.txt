@@ -1,0 +1,71 @@
+NBTExplorer:
+  Arguments:
+    ['file']
+  Description:
+    Opens NBTExploar with the file.
+
+cd:
+  Arguments:
+    ['dir']
+  Description:
+    Move to the new diretory.
+
+clear:
+  Arguments:
+    ['none']
+  Description:
+    Clears the console(Windows).
+
+compress:
+  Arguments:
+    ['file']
+  Description:
+    Compresses the file.
+
+decompress:
+  Arguments:
+    ['file']
+  Description:
+    Decompresses the file.
+
+download:
+  Arguments:
+    ['file']
+  Description:
+    Download the file.
+
+error:
+  Arguments:
+    ['none']
+  Description:
+    Prints all the errors from the response.
+
+exit:
+  Arguments:
+    ['none']
+  Description:
+    Closes the program.
+
+ls:
+  Arguments:
+    ['none']
+  Description:
+    Prints all files in diretory.
+
+notpad:
+  Arguments:
+    ['file']
+  Description:
+    Opens NBTExploar with the file.
+
+print:
+  Arguments:
+    ['file']
+  Description:
+    Prints the data of the file.
+
+rename:
+  Arguments:
+    ['file', 'New Name']
+  Description:
+    Download the file.
