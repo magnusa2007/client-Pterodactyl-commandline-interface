@@ -34,3 +34,4 @@ rename
 - [ ] Find out how to forking upload 
 - [ ] Move
 - [ ] Basic UUID command
+- [ ] Edit url
