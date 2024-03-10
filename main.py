@@ -11,8 +11,8 @@ pteroUrl = "https://url.com"
 #Setup end
 
 #Optinal
-NBTExplorer = r'"C:\Program Files (x86)\NBTExplorer\NBTExplorer.exe"'
-Notpad = r'"C:\Program Files\Notepad++\notepad++.exe"'
+NBTExplorer = r'start "C:\Program Files (x86)\NBTExplorer\NBTExplorer.exe"'
+Notpad = r'start "C:\Program Files\Notepad++\notepad++.exe"'
 #Optinal end
 headers = {
     "Authorization": api,
@@ -88,21 +88,6 @@ def getTabs(dir):
     return tab
 
 tab = getTabs('')
-
-command = dict()
-command['ls'] = {'args':['none'],'des': 'Prints all files in diretory.'}
-command['cd'] = {'args':['dir'],'des': 'Move to the new diretory.'}
-command['download'] = {'args':['file'],'des': 'Download the file.'}
-command['rename'] = {'args':['file',"New Name"],'des': 'Download the file.'}
-command['compress'] = {'args':['file'],'des': 'Compresses the file.'}
-command['decompress'] = {'args':['file'],'des': 'Decompresses the file.'}
-command['NBTExplorer'] = {'args':['file'],'des': 'Opens NBTExploar with the file.'}
-command['print'] = {'args':['file'],'des': 'Prints the data of the file.'}
-command['notpad'] = {'args':['file'],'des': 'Opens NBTExploar with the file.'}
-command['exit'] = {'args':['none'],'des': 'Closes the program.'}
-command['clear'] = {'args':['none'],'des': 'Clears the console(Windows).'}
-command['error'] = {'args':['none'],'des': 'Prints all the errors from the response.'}
-command = dict(sorted(command.items()))
 history = []
 
 def write(str):
@@ -189,23 +174,24 @@ def printDir():
         else:
             print(x)
 
-def download(file,dir):
-    url = pteroUrl+'/api/client/servers/'+server+'/files/download?file='+dir+'/'+file
+def download(file):
+    url = pteroUrl+'/api/client/servers/'+server+'/files/download?file='+file
     r = requests.get(url,headers=headers,cookies=cookies)
     print(r)
     url = r.json()['attributes']['url']
     r = requests.get(url,headers=headers,cookies=cookies)
     with open(file, mode="wb") as fs:
         fs.write(r.content)
-    print('Saved to '+file)
+    print('Saved to '+file.split('/')[-1])
     error.append(r.text)
 
-def delete(file,dir):
-    url = pteroUrl+'/api/client/servers/'+server+'/files/delete'
-    data = {"root":dir,"files":[file]}
-    r = requests.post(url, headers=headers,json=data,cookies=cookies)
-    print(r)
-    error.append(r.text)
+def delete(file):
+    if areYouSure('Are you sure you want to delete '+file.split('/')[-1]+'\nTHIS CANNOT BE UNDONE!'):
+        url = pteroUrl+'/api/client/servers/'+server+'/files/delete'
+        data = {"root":file[0:-len(file.split('/')[-1])],"files":[file.split('/')[-1]]}
+        r = requests.post(url, headers=headers,json=data,cookies=cookies)
+        print(r)
+        error.append(r.text)
     
 def upload(file,dir):
     fs = open(file,'rb').read()
@@ -218,41 +204,67 @@ def upload(file,dir):
     print(r)
     error.append(r.text)
     
-def compress(file,dir):
+def compress(file):
     url = pteroUrl+'/api/client/servers/'+server+'/files/compress'
-    data = {"root":dir,"files":[file]}
+    data = {"root":file[0:-len(file.split('/')[-1])],"files":[file.split('/')[-1]]}
     r = requests.post(url, headers=headers,json=data,cookies=cookies)
     print(r)
     error.append(r.text)
 
-def decompress(file,dir):
+def decompress(file):
     url = pteroUrl+'/api/client/servers/'+server+'/files/decompress'
-    data = {"root":dir,"files":[file]}
+    data = {"root":file[0:-len(file.split('/')[-1])],"files":[file.split('/')[-1]]}
     r = requests.post(url, headers=headers,json=data,cookies=cookies)
     print(r)
     error.append(r.text)
 
-def rename(before,after,dir):
-    url = pteroUrl+'/api/client/servers/'+server+'/files/rename'
-    data= {'root': dir,'files':[{'from':before,'to':after}]}
-    r = requests.put(url, json=data,headers = headers,cookies=cookies)
-    print(r)
-    error.append(r.text)
+def rename(file,newName):
+    if areYouSure('Are you sure that you want to rename '+file.split('/')[-1]+' to '+newName):
+        url = pteroUrl+'/api/client/servers/'+server+'/files/rename'
+        data= {'root': file[0:-len(file.split('/')[-1])],'files':[{'from':file.split('/')[-1],'to':newName}]}
+        r = requests.put(url, json=data,headers = headers,cookies=cookies)
+        print(r)
+        error.append(r.text)
     
 
 
-def filePrint(file,dir):
-    url = pteroUrl+'/api/client/servers/'+server+'/files/contents?file='+dir+'/'+file
+def filePrint(file):
+    url = pteroUrl+'/api/client/servers/'+server+'/files/contents?file='+file
     r = requests.get(url, json=data,headers = headers,cookies=cookies)
     print(r.text)
-            
+    error.append(r.text)
 
+def changeDir(dir):
+    global directory
+    if dir == '..':
+         directory = directory[:-len(directory.split('/')[-1])-1]
+    else:
+        if dir in tab['dir']:
+            if dir.count('.') == 0:
+                directory=directory+'/'+dir
+                
+def fNBTExplorer(file):
+    download(file)
+    print('Opening NBTExplorer')
+    os.system(NBTExplorer+' '+file.split('/')[-1])
+
+def fnotpad(file):
+    download(file)
+    print('Opening Notpad')
+    os.system(Notpad+' '+file.split('/')[-1])
+    
 def areYouSure(text):
     print(text)
     print('yes/no')
     sys.stdout.write('> ')
     return input().lower() == 'yes'
 
+def cls():
+    os.system('cls' if os.name=='nt' else 'clear')
+
+def errorPrint():
+    for i in error:
+        print(str(error.index(i))+': '+str(i))
 
 try:
     UUIDList = json.load(open('uuid.json'))
@@ -270,90 +282,43 @@ def UUID(uuid):
         json.dump(UUIDList,fs)
         fs.close()
         return name
-    
+#Commands
+command = dict()
+command['ls'] = {'args':['none'],'des': 'Prints all files in diretory.','f':printDir}
+command['cd'] = {'args':['dir'],'des': 'Move to the new diretory.','f':changeDir}
+command['download'] = {'args':['file'],'des': 'Download the file.','f':download}
+command['rename'] = {'args':['file',"New Name"],'des': 'Renames the file.','f':rename}
+command['compress'] = {'args':['file'],'des': 'Compresses the file.','f':compress}
+command['decompress'] = {'args':['file'],'des': 'Decompresses the file.','f':decompress}
+command['NBTExplorer'] = {'args':['file'],'des': 'Opens NBTExploar with the file.','f':fNBTExplorer}
+command['print'] = {'args':['file'],'des': 'Prints the data of the file.','f':filePrint}
+command['notpad'] = {'args':['file'],'des': 'Opens NBTExploar with the file.','f':fnotpad}
+command['exit'] = {'args':['none'],'des': 'Closes the program.','f':exit}
+command['clear'] = {'args':['none'],'des': 'Clears the console.','f':cls}
+command['error'] = {'args':['none'],'des': 'Prints all the errors from the response.','f':errorPrint}
+command = dict(sorted(command.items()))
+
+def commandHandle(input):
+    global directory
+    cs = input.split(' ')
+    if cs[0] in command:
+        for c in cs[1:]:
+            try:
+                for arg in command[cs[0]]['args']:
+                    if not c in tab[arg]:
+                        print(f'{c} is not a {arg}')
+                        return False
+                    elif arg == 'file':
+                        cs[cs.index(c)] = directory+'/'+c
+            except:
+                pass
+            
+        command[cs[0]]['f'](*cs[1:])
+    else:
+        print('Unkown command do help for list of all commands')
+        
 directory=''
 while True:
     tab = getTabs(directory)
     input = tabInput('home'+directory+'> ')
-    cs = input.split()
-    if cs[0] == 'cd':
-        if cs[1] == '..':
-            directory=directory[:-len(directory.split('/')[-1])-1]
-        else:
-            if cs[1] in tab['dir']:
-                if cs[1].count('.') == 0:
-                    directory=directory+'/'+cs[1]
-                else:
-                    print('Directory not file')
-            else:
-                print('Unkown directory')
-    
-    elif cs[0] == 'ls':
-        printDir()
-    elif cs[0] == 'download':
-        if cs[1] in tab['file']:
-            download(cs[1],directory)
-        else:
-            print('Unkown file')
-    elif cs[0] == 'exit':
-        exit()
-    elif cs[0] == 'clear':
-        os.system('cls')
-    elif cs[0] == 'rename':
-        if cs[1] in tab['file']:
-            if len(cs) == 3:
-                if areYouSure('Are you sure that you want to rename '+cs[1]):
-                    rename(cs[1],cs[2],directory)
-            else:
-                print('Must be two arguments')
-        else:
-            print('Unkown file')
-            
-    elif cs[0]=='delete':
-        if cs[1] in tab['file']:
-            if areYouSure('Are you sure you want to delete '+cs[1]+'\nTHIS CANNOT BE UNDONE!'):
-                delete(cs[1],directory)
-        else:
-            print('Unkown file')
-            
-    elif cs[0]=='compress':
-        if cs[1] in tab['file']:
-            compress(cs[1],directory)
-        else:
-            print('Unkown file')
-            
-    elif cs[0]=='upload':
-        upload(cs[1],directory)
-            
-    elif cs[0]=='decompress':
-        if cs[1] in tab['files']:
-            decompress(cs[1],directory)
-        else:
-            print('Unkown file')
-    elif cs[0]=='NBTExplorer':
-        if cs[1] in tab['file']:
-            download(cs[1],directory)
-            print('Opening NBTExplorer')
-            os.system(NBTExplorer+' '+cs[1])
-        else:
-            print('Unkown file')
-    elif cs[0]=='notpad':
-        if cs[1] in tab['files']:
-            download(cs[1],directory)
-            print('Opening Notpad')
-            os.system(Notpad+' '+cs[1])
-        else:
-            print('Unkown file')
-    elif cs[0]=='print':
-        if cs[1] in tab['file']:
-            filePrint(directory,cs[1])
-    elif cs[0] == 'help':
-        if len(cs) == 1:
-            help()
-        else:
-            help(cs[1])
-    elif cs[0] == 'error':
-        for i in error:
-            print(str(error.index(i))+': '+str(i))
-    else:
-        print('Unkown command do help for command list')
+    commandHandle(input)
