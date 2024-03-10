@@ -36,3 +36,4 @@ rename
 - [ ] Basic UUID command.
 - [ ] Open Edit url.
 - [ ] Compress command handling.
+- [ ] Download as content for some files
