@@ -33,6 +33,7 @@ rename
 - [x] NBTExplorer and notpad++ support.
 - [ ] Find out how to forking upload.
 - [ ] Move.
+- [ ] Make director command
 - [ ] Basic UUID command.
 - [ ] Open Edit url.
 - [x] Compress command handling.
