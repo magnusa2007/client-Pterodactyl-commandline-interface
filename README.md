@@ -35,5 +35,5 @@ rename
 - [ ] Move.
 - [ ] Basic UUID command.
 - [ ] Open Edit url.
-- [ ] Compress command handling.
+- [x] Compress command handling.
 - [ ] Download as content for some files
