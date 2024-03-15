@@ -5,7 +5,7 @@ No limits
 ```
 # Setup
 ```
-If on linux first do "pip install getch"
+Windows only
 Get remember web cookie from DevTools under applications
 Get api from account setting 
 You also need the url of the Pterodactyl
