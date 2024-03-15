@@ -40,3 +40,4 @@ uuid
 - [ ] Open Edit url.
 - [x] Compress command handling.
 - [ ] Download as content for some files
+- [x] [Make the cli into a template](https://github.com/magnusa2007/python-cli-tabcomplete-template) 
