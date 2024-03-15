@@ -24,6 +24,7 @@ ls
 notpad
 print
 rename
+uuid
 ```
 [More command info](https://github.com/magnusa2007/client-Pterodactyl-commandline-interface/blob/main/help.txt)
 
@@ -32,9 +33,9 @@ rename
 - [x] Tab complete.
 - [x] NBTExplorer and notpad++ support.
 - [ ] Find out how to forking upload.
-- [ ] Move.
-- [ ] Make director command
-- [ ] Basic UUID command.
+- [ ] Move command.
+- [ ] Mkdir command.
+- [X] Basic UUID command.
 - [ ] Open Edit url.
 - [x] Compress command handling.
 - [ ] Download as content for some files
