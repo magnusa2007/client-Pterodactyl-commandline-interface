@@ -8,6 +8,7 @@ No limits
 Get remember web cookie from DevTools under applications
 Get api from account setting 
 You also need the url of the Pterodactyl
+You can also make a bat file with "python main.py {number for your server}"
 ```
 
 # Commands
