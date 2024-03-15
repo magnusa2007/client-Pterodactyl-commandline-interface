@@ -10,6 +10,8 @@ Get api from account setting
 You also need the url of the Pterodactyl
 You can also make a bat file with "python main.py {number for your server}"
 ```
+# Showcase
+[showcase](https://github.com/magnusa2007/client-Pterodactyl-commandline-interface/assets/49444876/f96c91ad-9ede-4270-8e6a-ff198aa544ad)
 
 # Commands
 ```
@@ -24,7 +26,8 @@ exit
 ls
 notpad
 print
-rename
+rename!
+
 uuid
 ```
 [More command info](https://github.com/magnusa2007/client-Pterodactyl-commandline-interface/blob/main/help.txt)
