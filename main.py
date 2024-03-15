@@ -11,14 +11,16 @@ pteroUrl = "https://url.com"
 #Setup end
 
 #Optinal
-NBTExplorer = r'start "C:\Program Files (x86)\NBTExplorer\NBTExplorer.exe"'
-Notpad = r'start "C:\Program Files\Notepad++\notepad++.exe"'
+NBTExplorer = r'start "" "C:\Program Files (x86)\NBTExplorer\NBTExplorer.exe"'
+Notpad = r'start "" "C:\Program Files\Notepad++\notepad++.exe"'
 #Optinal end
 headers = {
     "Authorization": api,
     "Accept": "application/json",
     'content-type': 'application/json'
 }
+
+args = sys.argv
 
 ASCCI = """
    ___ _ _         _                               
@@ -60,19 +62,52 @@ for x in data['data']:
     name = x['attributes']['name']
     print(f'[{n}] {name}')
     servers[n] = x['attributes']['identifier']
-print('Pick a server')
-sys.stdout.write('> ')
-server=servers[int(input())]
+if len(args)>=2:
+    print(f'Logging into {args[1]}')
+    server=servers[int(args[1])]
+else:
+    print('Pick a server')
+    sys.stdout.write('> ')
+    server=servers[int(input())]
 
 
 error = ['Run a command first']
 
+#UUID Function
+try:
+    UUIDList = json.load(open('uuid.json'))
+except:
+    UUIDList = dict()
+
+def UUID(uuid,output='print'):
+    if output == 'return':
+        if uuid in UUIDList:
+            return UUIDList[uuid]
+        else:
+            r = requests.get(f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}")
+            name = r.json()['name']
+            UUIDList[uuid] = name
+            fs = open("uuid.json", "w")
+            json.dump(UUIDList,fs)
+            fs.close()
+            return name
+    else:
+        if uuid.count('-')==4:
+            print(f'{uuid}s name is {UUIDList[uuid]}')
+        else:
+            if uuid in UUIDList.values():
+                for u in UUIDList:
+                    if UUIDList[u] == uuid:
+                        print(f'{uuid}s UUID is {u}')
+
 
 #Tab complete
+tab = dict()
 def getTabs(dir):
-    tab = dict()
+    global tab
     tab['file'] = []
     tab['dir']  = ['..']
+    tab['uuid/name'] = []
 
     url = pteroUrl+'/api/client/servers/'+server+'/files/list?directory='+dir
     r = requests.get(url,headers=headers,cookies=cookies)
@@ -83,11 +118,14 @@ def getTabs(dir):
             tab['file'].append(x)
         else:
             tab['dir'].append(x)
+    for key in UUIDList:
+        tab['uuid/name'].append(key)
+        tab['uuid/name'].append(UUIDList[key])
     tab['dir'].sort()
     tab['file'].sort()
-    return tab
-
-tab = getTabs('')
+    tab['uuid/name'].sort()
+        
+getTabs('')
 history = []
 
 def write(str):
@@ -170,7 +208,7 @@ def printDir():
         print(x)
     for x in tab['file']:
         if x.count('-')==4:
-            print(f'({UUID(x[0:36])}) {x}')
+            print(f'({UUID(x[0:36],output="return")}) {x}')
         else:
             print(x)
 
@@ -180,7 +218,7 @@ def download(file):
     print(r)
     url = r.json()['attributes']['url']
     r = requests.get(url,headers=headers,cookies=cookies)
-    with open(file, mode="wb") as fs:
+    with open(file.split('/')[-1], mode="wb") as fs:
         fs.write(r.content)
     print('Saved to '+file.split('/')[-1])
     error.append(r.text)
@@ -266,22 +304,7 @@ def errorPrint():
     for i in error:
         print(str(error.index(i))+': '+str(i))
 
-try:
-    UUIDList = json.load(open('uuid.json'))
-except:
-    UUIDList = dict()
 
-def UUID(uuid):
-    if uuid in UUIDList:
-        return UUIDList[uuid]
-    else:
-        r = requests.get(f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}")
-        name = r.json()['name']
-        UUIDList[uuid] = name
-        fs = open("uuid.json", "w")
-        json.dump(UUIDList,fs)
-        fs.close()
-        return name
 #Commands
 command = dict()
 command['ls'] = {'args':['none'],'des': 'Prints all files in diretory.','f':printDir}
@@ -293,6 +316,7 @@ command['decompress'] = {'args':['file'],'des': 'Decompresses the file.','f':dec
 command['NBTExplorer'] = {'args':['file'],'des': 'Opens NBTExploar with the file.','f':fNBTExplorer}
 command['print'] = {'args':['file'],'des': 'Prints the data of the file.','f':filePrint}
 command['notpad'] = {'args':['file'],'des': 'Opens NBTExploar with the file.','f':fnotpad}
+command['uuid'] = {'args':['uuid/name'],'des': 'Returns the UUID or name of a player.','f':UUID}
 command['exit'] = {'args':['none'],'des': 'Closes the program.','f':exit}
 command['clear'] = {'args':['none'],'des': 'Clears the console.','f':cls}
 command['error'] = {'args':['none'],'des': 'Prints all the errors from the response.','f':errorPrint}
@@ -319,6 +343,6 @@ def commandHandle(input):
         
 directory=''
 while True:
-    tab = getTabs(directory)
+    getTabs(directory)
     input = tabInput('home'+directory+'> ')
     commandHandle(input)
