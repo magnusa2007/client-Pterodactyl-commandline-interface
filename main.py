@@ -1,8 +1,6 @@
 import os,requests, sys, json
-try:
-    from msvcrt import getch
-except:
-    from getch import getch
+from msvcrt import getch
+
 cookies={}
 
 #Setup
